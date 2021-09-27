@@ -11,7 +11,7 @@ namespace ByteBank {
 
         public int Agencia { get; }
         
-        public int Numero { get; }
+        public int Conta { get; }
 
         private double _saldo = 100;
 
@@ -29,32 +29,36 @@ namespace ByteBank {
         }
 
 
-        public ContaCorrente(int agencia, int numero) {
-            if (agencia <= 0 || numero <= 0) {
-                throw new ArgumentException("Não foi possível criar agência e/ou conta!");
+        public ContaCorrente(int agenciaNumero, int contaNumero) {
+            if (agenciaNumero <= 0) {
+                throw new ArgumentException("Não foi possível criar agência menor que zero (0)", nameof(agenciaNumero));
                 //ArgumentException equivale ao erro de argumento do construtor, diferente de só lançar Exception.
+                //Utilizar 'nameof' para que seja necessário alterar quando a variável for modificada.
             }
-            Agencia = agencia;
-            Numero = numero;
-            
-            try {
-                TaxaOperacao = 30 / TotalDeContasCriadas;
+            if (contaNumero <= 0) {
+                throw new ArgumentException("Não foi possível criar conta menor que zero (0)!", nameof(contaNumero));
             }
-            catch (DivideByZeroException e) {
-                Console.WriteLine(e.Message);
-                throw;
-            }
+            Agencia = agenciaNumero;
+            Conta = contaNumero;
             TotalDeContasCriadas++;
+            TaxaOperacao = 30 / TotalDeContasCriadas;
         }
 
 
-        public bool Sacar(double valor) {
-            if (_saldo < valor) {
-                return false;
+        public void Sacar(double valor)
+        {
+            if (valor < 0)
+            {
+                throw new ArgumentException("Valor inválido para o saque.", nameof(valor));
+            }
+
+            if (_saldo < valor)
+            {
+                throw new SaldoInsuficienteException(Saldo, valor);
             }
 
             _saldo -= valor;
-            return true;
+
         }
 
         public void Depositar(double valor) {
