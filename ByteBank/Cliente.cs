@@ -14,7 +14,6 @@ namespace ByteBank {
                 return _cpf;
             }
             set {
-                // Escrevo minha lógica de validação de CPF
                 _cpf = value;
             }
         }
